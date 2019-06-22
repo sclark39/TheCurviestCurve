@@ -11,6 +11,7 @@
 #include "BlueprintNodeSpawner.h"
 #include "K2Node_CallFunction.h"
 #include "GraphEditorSettings.h"
+#include "Framework/MultiBox/MultiBoxBuilder.h"
 
 #define LOCTEXT_NAMESPACE "K2Node_Curviest"
 
@@ -37,6 +38,24 @@ struct FGetPinName {
 	}
 };
 
+void UK2Node_CurviestGetCurveValues::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
+{
+	bool bIsDirty = false;
+	FName PropertyName = (PropertyChangedEvent.Property != NULL) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+	if (PropertyName == TEXT("TemplateCurve"))
+	{
+		bIsDirty = true;
+	}
+
+	if (bIsDirty)
+	{
+		ReconstructNode();
+		GetGraph()->NotifyGraphChanged();
+	}
+
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+}
+
 void UK2Node_CurviestGetCurveValues::AllocateDefaultPins()
 {
 	Super::AllocateDefaultPins();
@@ -60,6 +79,7 @@ void UK2Node_CurviestGetCurveValues::AllocateDefaultPins()
 		for (FRichCurveEditInfo Elem : EditCurves)
 			OutCurveNames.Emplace(Elem.CurveName);
 	}
+
 
 	for (FName CurveName : OutCurveNames)
 	{
@@ -192,9 +212,9 @@ void UK2Node_CurviestGetCurveValues::GetContextMenuActions(const FGraphNodeConte
 
 void UK2Node_CurviestGetCurveValues::RefreshTemplateCurve()
 {
-	OutCurveNames.Empty();
 	if (TemplateCurve)
 	{
+		OutCurveNames.Empty();
 		TArray<FRichCurveEditInfo> EditCurves = TemplateCurve->GetCurves();
 		for (FRichCurveEditInfo Elem : EditCurves)
 			OutCurveNames.Emplace(Elem.CurveName);
