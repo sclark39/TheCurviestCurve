@@ -1,0 +1,29 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "TheCurviestCurve",
+	"Description": "Infinite number of named curves stored within a single curve asset",
+	"Category": "Other",
+	"CreatedBy": "Skyler Clark",
+	"CreatedByURL": "http://skylerclark.com",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": true,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "TheCurviestCurve",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+
+		{
+			"Name": "TheCurviestCurveEditor",
+			"Type": "Editor",
+			"LoadingPhase": "PostEngineInit"
+		}
+	]
+}
