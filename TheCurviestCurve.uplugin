@@ -1,7 +1,7 @@
 {
   "FileVersion": 3,
-  "Version": 1,
-  "VersionName": "1",
+  "Version": 2,
+  "VersionName": "2.0",
   "FriendlyName": "The Curviest Curve",
   "Description": "Infinite number of named curves stored within a single curve asset",
   "Category": "Other",
@@ -9,7 +9,6 @@
   "CreatedByURL": "http://skylerclark.com",
   "DocsURL": "",
   "MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/b5fce2cbfa644b1a8e1fcb7683a881d2",
-  "WhitelistPlatforms": [ "Win64", "Win32", "Mac", "IOS", "Android" ],
   "SupportURL": "https://twitter.com/sclark39",
   "CanContainContent": true,
   "IsBetaVersion": true,
@@ -18,13 +17,14 @@
     {
       "Name": "TheCurviestCurve",
       "Type": "Runtime",
-      "LoadingPhase": "Default"
+      "LoadingPhase": "Default",
+ 	    "WhitelistPlatforms": [  "Win64", "Win32", "Mac", "Linux", "XboxOne", "PS4", "IOS", "Android", "HTML5", "Switch" ]
     },
-
     {
       "Name": "TheCurviestCurveEditor",
       "Type": "Editor",
-      "LoadingPhase": "PostEngineInit"
+      "LoadingPhase": "PostEngineInit",
+ 	    "WhitelistPlatforms": [  "Win64", "Win32", "Mac", "Linux", "XboxOne", "PS4", "IOS", "Android", "HTML5", "Switch" ]
     }
   ]
 }
