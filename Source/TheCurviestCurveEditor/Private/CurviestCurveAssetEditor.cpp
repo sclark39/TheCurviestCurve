@@ -309,10 +309,26 @@ void FCurviestCurveAssetEditor::AddCurvesToCurveEditor()
 	// Add back the new
 	for (const FRichCurveEditInfo& CurveData : Curve->GetCurves())
 	{
+		TArray<FString> TreeHierarchy;
+		FString CurveName = CurveData.CurveName.ToString();
+		CurveName.ParseIntoArray(TreeHierarchy, TEXT("."));
+
+		FCurveEditorTreeItemID ParentTreeId = FCurveEditorTreeItemID::Invalid();
+
+		if (1 < TreeHierarchy.Num())
+		{
+			for (FString Breadcrumb : TreeHierarchy)
+			{
+
+			}
+
+		}
+
+
 		TSharedPtr<FCurviestCurveAssetEditorTreeItem> TreeItem = MakeShared<FCurviestCurveAssetEditorTreeItem>(Curve, CurveData);
 
 		// Add the channel to the tree-item and let it manage the lifecycle of the tree item.
-		FCurveEditorTreeItem* NewItem = CurveEditor->AddTreeItem(FCurveEditorTreeItemID::Invalid());
+		FCurveEditorTreeItem* NewItem = CurveEditor->AddTreeItem(ParentTreeId);
 		NewItem->SetStrongItem(TreeItem);
 
 		// Pin all of the created curves by default for now so that they're visible when you open the
