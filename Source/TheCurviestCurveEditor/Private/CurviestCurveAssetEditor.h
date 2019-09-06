@@ -9,17 +9,15 @@
 #include "Toolkits/IToolkitHost.h"
 #include "ICurveAssetEditor.h"
 
-class SCurveEditor;
+class FCurveEditor;
 class UCurveBase;
+class SCurveEditorPanel;
 
 class FCurviestCurveAssetEditor :  public ICurveAssetEditor
 {
 public:
 
 	FCurviestCurveAssetEditor()
-		: TrackWidget( NULL )
-		, ViewMinInput( 0.f )
-		, ViewMaxInput( 0.f )
 	{}
 
 	virtual ~FCurviestCurveAssetEditor() {}
@@ -46,46 +44,28 @@ public:
 	TSharedRef<SWidget> MakeCurveEditorCurveOptionsMenu();
 
 private:
-
-	float GetViewMinInput() const { return ViewMinInput; }
-	float GetViewMaxInput() const { return ViewMaxInput; }
-	/** Sets InViewMinInput and InViewMaxInput */
-	void SetInputViewRange(float InViewMinInput, float InViewMaxInput);
-	/** Return length of timeline */
-	float GetTimelineLength() const;
+	
 	/**	Spawns the tab with the curve asset inside */
 	TSharedRef<SDockTab> SpawnTab_CurveAsset( const FSpawnTabArgs& Args );
 	void RefreshTab_CurveAsset(UCurveBase *Curve);
 
-	/**	Spawns the details panel for the color curve */
-	TSharedRef<SDockTab> SpawnTab_ColorCurveEditor(const FSpawnTabArgs& Args);
-	/** Get the snapping value for the input domain. */
-	float GetInputSnap() const;
-	/** Gets the snapping value for the input domain as text. */
-	void SetInputSnap(float value);
+	void AddCurvesToCurveEditor();
 
-	/** Get the snapping value for the output domain. */
-	float GetOutputSnap() const;
-	/** Get set the snapping value for the output domain. */
-	void SetOutputSnap(float value);
+	/**	Spawns the details panel for the color curve */
+	TSharedRef<SDockTab> SpawnTab_CurveDetailsEditor(const FSpawnTabArgs& Args);
 
 	/** Get the orientation for the snap value controls. */
 	EOrientation GetSnapLabelOrientation() const;
 
-	TSharedPtr<class SCurveEditor> TrackWidget;
+private:
+	TSharedPtr<FCurveEditor> CurveEditor;
+	TSharedPtr<SCurveEditorPanel> CurveEditorPanel;
 
 	/**	The tab id for the curve asset tab */
 	static const FName CurveTabId;
 	/**	The tab id for the color curve editor tab */
-	static const FName ColorCurveEditorTabId;
+	static const FName CurveDetailsTabId;
 
-	float ViewMinInput;
-	float ViewMaxInput;
-
-	/** The snapping value for the input domain. */
-	float InputSnap;
-	/** The snapping value for the output domain. */
-	float OutputSnap;
 	/* Holds the details panel for the color curve */
-	TSharedPtr<class IDetailsView> ColorCurveDetailsView;
+	TSharedPtr<class IDetailsView> CurveDetailsView;
 };
