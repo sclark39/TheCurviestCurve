@@ -18,13 +18,13 @@
       "Name": "TheCurviestCurve",
       "Type": "Runtime",
       "LoadingPhase": "Default",
- 	    "WhitelistPlatforms": [  "Win64", "Win32", "Mac", "Linux", "XboxOne", "PS4", "IOS", "Android", "HTML5", "Switch" ]
+ 	    "WhitelistPlatforms": [  "Win64", "Win32", "XboxOne", "PS4", "Switch" ]
     },
     {
       "Name": "TheCurviestCurveEditor",
       "Type": "Editor",
       "LoadingPhase": "PostEngineInit",
- 	    "WhitelistPlatforms": [  "Win64", "Win32", "Mac", "Linux", "XboxOne", "PS4", "IOS", "Android", "HTML5", "Switch" ]
+ 	    "WhitelistPlatforms": [  "Win64", "Win32", "XboxOne", "PS4", "Switch" ]
     }
   ]
 }
