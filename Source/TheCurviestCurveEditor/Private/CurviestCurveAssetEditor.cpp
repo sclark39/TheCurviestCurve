@@ -31,6 +31,48 @@
 const FName FCurviestCurveAssetEditor::CurveTabId( TEXT( "CurveAssetEditor_Curve" ) );
 const FName FCurviestCurveAssetEditor::CurveDetailsTabId(TEXT("CurveAssetEditor_ColorCurveEditor"));
 
+struct FCurviestCurveAssetEditorTreeParentItem : public ICurveEditorTreeItem
+{
+	FCurviestCurveAssetEditorTreeParentItem(FText InLabelName, FLinearColor InLabelColor)
+	{
+		LabelName = InLabelName;
+		LabelColor = InLabelColor;
+	}
+
+	virtual TSharedPtr<SWidget> GenerateCurveEditorTreeWidget(const FName& InColumnName, TWeakPtr<FCurveEditor> InCurveEditor, FCurveEditorTreeItemID InTreeItemID, const TSharedRef<ITableRow>& TableRow) override
+	{
+		if (InColumnName == ColumnNames.Label)
+		{
+			return SNew(SHorizontalBox)
+
+				+ SHorizontalBox::Slot()
+				.Padding(FMargin(4.f))
+				.VAlign(VAlign_Center)
+				.HAlign(HAlign_Right)
+				.AutoWidth()
+				[
+					SNew(STextBlock)
+					.Text(LabelName)
+				.ColorAndOpacity(FSlateColor(LabelColor))
+				];
+		}
+
+		else if (InColumnName == ColumnNames.PinHeader)
+		{
+			return SNew(SCurveEditorTreePin, InCurveEditor, InTreeItemID, TableRow);
+		}
+
+		return nullptr;
+	}
+
+	virtual void CreateCurveModels(TArray<TUniquePtr<FCurveModel>>& OutCurveModels) override
+	{}
+
+private:
+	FText LabelName;
+	FLinearColor LabelColor;
+};
+
 struct FCurviestCurveAssetEditorTreeItem : public ICurveEditorTreeItem
 {
 	FCurviestCurveAssetEditorTreeItem(TWeakObjectPtr<UCurveBase> InCurveOwner, const FRichCurveEditInfo& InEditInfo)
@@ -306,9 +348,18 @@ void FCurviestCurveAssetEditor::AddCurvesToCurveEditor()
 	if (!Curve) 
 		return;
 
+	TSharedPtr<FCurviestCurveAssetEditorTreeParentItem> ParentTreeItem = MakeShared<FCurviestCurveAssetEditorTreeParentItem>(
+		LOCTEXT("CurvesTreeHeading", "Curviest Curves"),
+		FColor::White);
+	FCurveEditorTreeItem* ParentItem = CurveEditor->AddTreeItem(FCurveEditorTreeItemID::Invalid());
+	ParentItem->SetStrongItem(ParentTreeItem);	
+
+	FCurveEditorTreeItemID ParentTreeId = ParentItem->GetID();
+
 	// Add back the new
 	for (const FRichCurveEditInfo& CurveData : Curve->GetCurves())
 	{
+		/*
 		TArray<FString> TreeHierarchy;
 		FString CurveName = CurveData.CurveName.ToString();
 		CurveName.ParseIntoArray(TreeHierarchy, TEXT("."));
@@ -323,7 +374,7 @@ void FCurviestCurveAssetEditor::AddCurvesToCurveEditor()
 			}
 
 		}
-
+		*/
 
 		TSharedPtr<FCurviestCurveAssetEditorTreeItem> TreeItem = MakeShared<FCurviestCurveAssetEditorTreeItem>(Curve, CurveData);
 
