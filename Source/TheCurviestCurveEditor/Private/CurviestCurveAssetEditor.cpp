@@ -254,7 +254,6 @@ TSharedRef<SDockTab> FCurviestCurveAssetEditor::SpawnTab_CurveAsset(const FSpawn
 	UCurveBase* Curve = Cast<UCurveBase>(GetEditingObject());
 	if (Curve)
 	{
-		AddCurvesToCurveEditor();
 		if (UCurveCurviest *Curviest = Cast<UCurveCurviest>(Curve))
 		{
 			AddCurvesToCurveEditor();
