@@ -75,13 +75,13 @@ private:
 
 struct FCurviestCurveAssetEditorTreeItem : public ICurveEditorTreeItem
 {
-	FCurviestCurveAssetEditorTreeItem(TWeakObjectPtr<UCurveBase> InCurveOwner, const FRichCurveEditInfo& InEditInfo)
+	FCurviestCurveAssetEditorTreeItem(FName InCurveName, TWeakObjectPtr<UCurveBase> InCurveOwner, const FRichCurveEditInfo& InEditInfo)
 		: CurveOwner(InCurveOwner)
 		, EditInfo(InEditInfo)
 	{
 		if (CurveOwner.IsValid())
 		{
-			CurveName = FText::FromName(EditInfo.CurveName);
+			CurveName = FText::FromName(InCurveName);
 			CurveColor = CurveOwner->GetCurveColor(EditInfo);
 		}
 	}
@@ -337,10 +337,39 @@ void FCurviestCurveAssetEditor::RefreshTab_CurveAsset(UCurveBase *Curve)
 		for (FCurveModelID CurveId : CurveIds)
 			CurveEditor->RemoveCurve(CurveId);
 
+		TreeItemIdMaps.Empty();
 		AddCurvesToCurveEditor();
 		RegenerateMenusAndToolbars();
 	}
 }
+
+FCurveEditorTreeItemID FCurviestCurveAssetEditor::GetTreeItemId(FName Breadcrumb)
+{	
+	FCurveEditorTreeItemID *FoundTreeId = TreeItemIdMaps.Find(Breadcrumb);
+	if (FoundTreeId)
+		return *FoundTreeId;
+
+	FCurveEditorTreeItemID ParentId = FCurveEditorTreeItemID::Invalid();
+
+	FString ParentTrail;
+	FString Heading = Breadcrumb.ToString();
+	if (Breadcrumb.ToString().Split(".", &ParentTrail, &Heading, ESearchCase::IgnoreCase, ESearchDir::FromEnd))
+	{
+		ParentId = GetTreeItemId(FName(*ParentTrail));
+	}
+
+	TSharedPtr<FCurviestCurveAssetEditorTreeParentItem> TreeDisplayItem = MakeShared<FCurviestCurveAssetEditorTreeParentItem>(
+		FText::FromString(Heading),
+		FColor::White);
+	FCurveEditorTreeItem* TreeItem = CurveEditor->AddTreeItem(ParentId);
+	TreeItem->SetStrongItem(TreeDisplayItem);
+
+	FCurveEditorTreeItemID TreeId = TreeItem->GetID();
+	TreeItemIdMaps.Add(Breadcrumb, TreeId);
+
+	return TreeId;
+}
+
 
 void FCurviestCurveAssetEditor::AddCurvesToCurveEditor()
 {
@@ -348,46 +377,31 @@ void FCurviestCurveAssetEditor::AddCurvesToCurveEditor()
 	if (!Curve) 
 		return;
 
-	TSharedPtr<FCurviestCurveAssetEditorTreeParentItem> ParentTreeItem = MakeShared<FCurviestCurveAssetEditorTreeParentItem>(
-		LOCTEXT("CurvesTreeHeading", "Curviest Curves"),
-		FColor::White);
-	FCurveEditorTreeItem* ParentItem = CurveEditor->AddTreeItem(FCurveEditorTreeItemID::Invalid());
-	ParentItem->SetStrongItem(ParentTreeItem);	
-
-	FCurveEditorTreeItemID ParentTreeId = ParentItem->GetID();
-
 	// Add back the new
 	for (const FRichCurveEditInfo& CurveData : Curve->GetCurves())
 	{
-		/*
-		TArray<FString> TreeHierarchy;
-		FString CurveName = CurveData.CurveName.ToString();
-		CurveName.ParseIntoArray(TreeHierarchy, TEXT("."));
-
 		FCurveEditorTreeItemID ParentTreeId = FCurveEditorTreeItemID::Invalid();
 
-		if (1 < TreeHierarchy.Num())
+		FString CurveName = CurveData.CurveName.ToString();
+		FString ParentTrail;
+		FString Heading = CurveName;
+		if (CurveName.Split(".", &ParentTrail, &Heading, ESearchCase::IgnoreCase, ESearchDir::FromEnd))
 		{
-			for (FString Breadcrumb : TreeHierarchy)
-			{
-
-			}
-
+			ParentTreeId = GetTreeItemId(FName(*ParentTrail));
 		}
-		*/
 
-		TSharedPtr<FCurviestCurveAssetEditorTreeItem> TreeItem = MakeShared<FCurviestCurveAssetEditorTreeItem>(Curve, CurveData);
+		TSharedPtr<FCurviestCurveAssetEditorTreeItem> TreeItem = MakeShared<FCurviestCurveAssetEditorTreeItem>(FName(*Heading), Curve, CurveData);
 
 		// Add the channel to the tree-item and let it manage the lifecycle of the tree item.
 		FCurveEditorTreeItem* NewItem = CurveEditor->AddTreeItem(ParentTreeId);
 		NewItem->SetStrongItem(TreeItem);
-
+		
 		// Pin all of the created curves by default for now so that they're visible when you open the
 		// editor. Since there's only ever up to 4 channels we don't have to worry about overwhelming
 		// amounts of curves.
 		for (const FCurveModelID CurveModel : NewItem->GetOrCreateCurves(CurveEditor.Get()))
 		{
-			CurveEditor->PinCurve(CurveModel);
+			CurveEditor->PinCurve(CurveModel);			
 		}
 	}
 }

@@ -8,6 +8,8 @@
 #include "Widgets/SWidget.h"
 #include "Toolkits/IToolkitHost.h"
 #include "ICurveAssetEditor.h"
+#include "CurveEditorTypes.h"
+#include "Containers/Map.h"
 
 class FCurveEditor;
 class UCurveBase;
@@ -68,4 +70,7 @@ private:
 
 	/* Holds the details panel for the color curve */
 	TSharedPtr<class IDetailsView> CurveDetailsView;
+
+	FCurveEditorTreeItemID GetTreeItemId(FName Breadcrumb);
+	TMap<FName, FCurveEditorTreeItemID> TreeItemIdMaps;
 };
