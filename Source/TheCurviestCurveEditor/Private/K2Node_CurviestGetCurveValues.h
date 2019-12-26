@@ -7,7 +7,10 @@
 #include "K2Node.h"
 #include "Curves/CurveBase.h"
 #include "Curves/RichCurve.h"
+#include "Runtime/Launch/Resources/Version.h"
+
 #include "K2Node_CurviestGetCurveValues.generated.h"
+
 
 UCLASS(MinimalAPI)
 class UK2Node_CurviestGetCurveValues : public UK2Node
@@ -27,7 +30,11 @@ public:
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	virtual void PinDefaultValueChanged(UEdGraphPin* Pin) override;
 	virtual void PreloadRequiredAssets() override;
+#if ENGINE_MINOR_VERSION < 24
 	virtual void GetContextMenuActions(const FGraphNodeContextMenuBuilder& Context) const override;
+#else
+	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
+#endif
 	// End of UEdGraphNode implementation
 
 	// K2Node implementation 

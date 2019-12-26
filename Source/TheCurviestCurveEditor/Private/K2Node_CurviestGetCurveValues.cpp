@@ -13,6 +13,10 @@
 #include "GraphEditorSettings.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
 
+#if ENGINE_MINOR_VERSION >= 24
+#include "ToolMenus.h"
+#endif
+
 #define LOCTEXT_NAMESPACE "K2Node_Curviest"
 
 struct FGetPinName {
@@ -188,7 +192,7 @@ void UK2Node_CurviestGetCurveValues::GetMenuActions(FBlueprintActionDatabaseRegi
 	}
 }
 
-
+#if ENGINE_MINOR_VERSION < 24
 void UK2Node_CurviestGetCurveValues::GetContextMenuActions(const FGraphNodeContextMenuBuilder& Context) const
 {
 	Super::GetContextMenuActions(Context);
@@ -209,6 +213,25 @@ void UK2Node_CurviestGetCurveValues::GetContextMenuActions(const FGraphNodeConte
 
 	Context.MenuBuilder->EndSection();
 }
+#else
+void UK2Node_CurviestGetCurveValues::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
+{
+	Super::GetNodeContextMenuActions(Menu, Context);
+
+	FToolMenuSection& Section = Menu->AddSection("K2NodeCurviestGetCurveValues", LOCTEXT("CurviestGetCurveValuesHeader", "Curviest"));
+	Section.AddMenuEntry(
+		"RefreshNode",
+		LOCTEXT("RefreshNode", "Refresh Node"),
+		LOCTEXT("RefreshNodeTooltip", "Refresh this node."),
+		FSlateIcon(),
+		FUIAction(
+			FExecuteAction::CreateUObject(this, &UK2Node_CurviestGetCurveValues::RefreshTemplateCurve),
+			FCanExecuteAction(),
+			FIsActionChecked()
+		)
+	);
+}
+#endif
 
 void UK2Node_CurviestGetCurveValues::RefreshTemplateCurve()
 {
