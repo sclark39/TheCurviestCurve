@@ -47,6 +47,9 @@ public class TheCurviestCurveEditor : ModuleRules
 				"GraphEditor",
 				"BlueprintGraph",
 				"EditorStyle",
+#if UE_4_24_OR_LATER
+				"ToolMenus",
+#endif
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
