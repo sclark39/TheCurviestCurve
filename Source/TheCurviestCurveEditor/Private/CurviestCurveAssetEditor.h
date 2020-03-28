@@ -14,6 +14,7 @@
 class FCurveEditor;
 class UCurveBase;
 class SCurveEditorPanel;
+class SCurveEditorTree;
 
 class FCurviestCurveAssetEditor :  public ICurveAssetEditor
 {
@@ -62,6 +63,7 @@ private:
 private:
 	TSharedPtr<FCurveEditor> CurveEditor;
 	TSharedPtr<SCurveEditorPanel> CurveEditorPanel;
+	TSharedPtr<SCurveEditorTree> CurveEditorTree;
 
 	/**	The tab id for the curve asset tab */
 	static const FName CurveTabId;

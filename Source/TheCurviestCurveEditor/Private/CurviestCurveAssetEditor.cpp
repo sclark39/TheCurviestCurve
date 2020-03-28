@@ -286,9 +286,10 @@ TSharedRef<SDockTab> FCurviestCurveAssetEditor::SpawnTab_CurveAsset(const FSpawn
 	TUniquePtr<ICurveEditorBounds> EditorBounds = MakeUnique<FStaticCurveEditorBounds>();
 	EditorBounds->SetInputBounds(-1.05, 1.05);
 	CurveEditor->SetBounds(MoveTemp(EditorBounds));
-
+	
+	CurveEditorTree = SNew(SCurveEditorTree, CurveEditor);
 	CurveEditorPanel = SNew(SCurveEditorPanel, CurveEditor.ToSharedRef())
-		.TreeContent()[SNew(SCurveEditorTree, CurveEditor)];
+		.TreeContent()[CurveEditorTree.ToSharedRef()];
 
 	UCurveBase* Curve = Cast<UCurveBase>(GetEditingObject());
 	if (Curve)
@@ -386,9 +387,10 @@ void FCurviestCurveAssetEditor::AddCurvesToCurveEditor()
 		FCurveEditorTreeItem* NewItem = CurveEditor->AddTreeItem(ParentTreeId);
 		NewItem->SetStrongItem(TreeItem);
 		
-		// Pin all of the created curves by default for now so that they're visible when you open the
-		// editor. Since there's only ever up to 4 channels we don't have to worry about overwhelming
-		// amounts of curves.
+		// Expand all folders so everything is visible when you open the editor.
+		CurveEditorTree->SetItemExpansion(ParentTreeId, true);
+
+		// Pin all of the curves so everything is visible when you open the editor.
 		for (const FCurveModelID CurveModel : NewItem->GetOrCreateCurves(CurveEditor.Get()))
 		{
 			CurveEditor->PinCurve(CurveModel);			
