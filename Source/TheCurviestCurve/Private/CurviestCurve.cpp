@@ -17,6 +17,7 @@ float UCurveCurviestBlueprintUtils::GetValueFromCurve(UCurveBase *Curve, FName N
 
 UCurveCurviest::UCurveCurviest()
 {
+	CurveData.Add(FCurviestCurveData("Curviest.Curve_0", FLinearColor::MakeRandomColor()));
 }
 
 UCurveCurviest::~UCurveCurviest()
@@ -76,68 +77,94 @@ bool UCurveCurviest::operator==(const UCurveCurviest& Curve) const
 
 #if WITH_EDITOR
 
+
+
+void UCurveCurviest::MakeCurveNameUnique( int CurveIdx )
+{
+	FCurviestCurveData &Curve = CurveData[CurveIdx];
+
+	// Find Name Base
+	FString BaseName = Curve.Name.ToString();
+	int NewNameIdx = 0;
+	FString NewName = BaseName;
+
+	int UnderscoreIdx;
+	if (BaseName.FindLastChar('_', UnderscoreIdx))
+	{
+		FString Left = BaseName.Left(UnderscoreIdx);
+		FString Right = BaseName.RightChop(UnderscoreIdx + 1);
+		if (Right.IsNumeric())
+		{
+			BaseName = Left;
+			NewNameIdx = FCString::Atoi(*Right);
+		}
+	}
+
+	// Collect Names
+	TSet<FName> NameList;
+	for (int i = 0; i < CurveData.Num(); i++)
+	{
+		if (i != CurveIdx)
+		{
+			NameList.Add(CurveData[i].Name);
+		}
+	}
+
+	// Find Unique Name
+	while (NameList.Contains(FName(*NewName)))
+	{
+		NewName = FString::Printf(TEXT("%s_%d"), *BaseName, ++NewNameIdx);
+	}
+
+	Curve.Name = FName(*NewName);
+}
+
 void UCurveCurviest::PreEditChange(class FEditPropertyChain& PropertyAboutToChange)
 {
 	Super::PreEditChange(PropertyAboutToChange);
 
-	OldCurveNames = CurveNames;
+	OldCurveCount = CurveData.Num();
+
 }
 
 void UCurveCurviest::PostEditChangeChainProperty(struct FPropertyChangedChainEvent& e)
 {
 	Super::PostEditChangeChainProperty(e);
 	
-	TArray<FName> Added = CurveNames.Difference(OldCurveNames).Array();
-	TArray<FName> Removed = OldCurveNames.Difference(CurveNames).Array();
-
+	const FName PropName = e.GetPropertyName();
+	int CurveIdx = e.GetArrayIndex("CurveData");
+	
 	switch (e.ChangeType)
 	{
-	case EPropertyChangeType::ArrayAdd:
-		if (Added.Num())
-		{
-			CurveData.Add(FCurviestCurveData( Added[0], FLinearColor::MakeRandomColor() ));
-			UE_LOG(LogTemp, Log, TEXT("Added new %s"), *Added[0].ToString());
-		}
-		break;
-
-	case EPropertyChangeType::ArrayRemove:
-		if (Removed.Num())
-		{
-			for (int Idx = CurveData.Num(); Idx-- > 0;)
+		case EPropertyChangeType::ArrayAdd:
+			if (OldCurveCount < CurveData.Num())
 			{
-				if (CurveData[Idx].Name == Removed[0])
+				CurveData[CurveIdx].Name = "Curviest.Curve_0";
+				CurveData[CurveIdx].Color = FLinearColor::MakeRandomColor();
+				MakeCurveNameUnique(CurveIdx);
+			}
+			break;
+
+		case EPropertyChangeType::ValueSet:
+		{
+			if (0 < CurveIdx)
+			{
+				if (PropName == "Name")
 				{
-					CurveData.RemoveAt(Idx);
-					break;
+					MakeCurveNameUnique(CurveIdx);
+				}
+				if (PropName == "Color")
+				{
+					CurveData[CurveIdx].Color.A = 1.0f;
 				}
 			}
-
-			CurveNames.CompactStable();
-
-			UE_LOG(LogTemp, Log, TEXT("Deleted %s"), *Removed[0].ToString());
 		}
-		break;
+			break;
 
-	case EPropertyChangeType::ValueSet:
-		if (Added.Num() && Removed.Num())
-		{
-			for (auto& Data : CurveData)
-				if (Data.Name == Removed[0])
-				{
-					Data.Name = Added[0];
-					//Data.Color = FLinearColor::MakeRandomColor();
-				}
-
-			UE_LOG(LogTemp, Log, TEXT("Changed value from %s to %s"), *Added[0].ToString(), *Removed[0].ToString());
-		}
-		break;
-
-	case EPropertyChangeType::ArrayClear:
-		CurveData.Empty();
-		UE_LOG(LogTemp, Log, TEXT("Cleared Array"));
-		break;
+		case EPropertyChangeType::ArrayClear:
+			break;
+		
 	}
-	
 
 	OnCurveMapChanged.Broadcast( this );
 }

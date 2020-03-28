@@ -18,23 +18,26 @@ public:
 	static float GetValueFromCurve(UCurveBase *Curve, FName Name, float InTime);
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FCurviestCurveData
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category = "Curviest")
 	FName Name;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category = "Curviest")
 	FLinearColor Color;
 
 	UPROPERTY()
 	FRichCurve Curve;
 
-	FCurviestCurveData() {}
-	FCurviestCurveData(FName Name, FLinearColor Color) 
+	FCurviestCurveData() 
+	{
+		this->Color = FLinearColor::White;
+	}
+	FCurviestCurveData(FName Name, FLinearColor Color)
 	{
 		this->Name = Name;
 		this->Color = Color;
@@ -53,13 +56,10 @@ public:
 	UCurveCurviest();
 	~UCurveCurviest();
 
-	UPROPERTY(EditAnywhere, Category = "Curviest")
-	TSet<FName> CurveNames;
-
-	UFUNCTION(BlueprintCallable, Category = "Math|Curves")
+	/*UFUNCTION(BlueprintCallable, Category = "Math|Curves")
 	TArray<FName> GetCurveNames() const {
 		return CurveNames.Array();
-	}
+	}*/
 
 	/** Evaluate this float curve at the specified time */
 	UFUNCTION(BlueprintCallable, Category = "Math|Curves")
@@ -78,6 +78,8 @@ public:
 	virtual bool IsValidCurve(FRichCurveEditInfo CurveInfo) override;
 
 #if WITH_EDITOR
+	void MakeCurveNameUnique(int CurveIdx);
+		
 	virtual void PreEditChange(class FEditPropertyChain& PropertyAboutToChange) override;
 	virtual void PostEditChangeChainProperty(struct FPropertyChangedChainEvent& PropertyChangedChainEvent) override;
 	//virtual void OnCurveChanged(const TArray<FRichCurveEditInfo>& ChangedCurveEditInfos) override;
@@ -87,10 +89,11 @@ public:
 	FOnCurveMapChanged OnCurveMapChanged;
 #endif
 
-protected:
-	TSet<FName> OldCurveNames;
-
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category = "Curviest")
 	TArray<FCurviestCurveData> CurveData;
+
+protected:
+	int OldCurveCount;
+
 
 };
