@@ -17,7 +17,7 @@ float UCurveCurviestBlueprintUtils::GetValueFromCurve(UCurveBase *Curve, FName N
 
 UCurveCurviest::UCurveCurviest()
 {
-	CurveData.Add(FCurviestCurveData("Curviest.Curve_0", FLinearColor::MakeRandomColor()));
+	CurveData.Add(FCurviestCurveData("Curve_0", FLinearColor::MakeRandomColor()));
 }
 
 UCurveCurviest::~UCurveCurviest()
@@ -139,7 +139,7 @@ void UCurveCurviest::PostEditChangeChainProperty(struct FPropertyChangedChainEve
 		case EPropertyChangeType::ArrayAdd:
 			if (OldCurveCount < CurveData.Num())
 			{
-				CurveData[CurveIdx].Name = "Curviest.Curve_0";
+				CurveData[CurveIdx].Name = "Curve_0";
 				CurveData[CurveIdx].Color = FLinearColor::MakeRandomColor();
 				MakeCurveNameUnique(CurveIdx);
 			}

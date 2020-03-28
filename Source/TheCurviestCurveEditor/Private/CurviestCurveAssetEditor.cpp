@@ -22,7 +22,7 @@
 #include "CommonFrameRates.h"
 #include "Tree/ICurveEditorTreeItem.h"
 #include "Tree/SCurveEditorTree.h"
-#include "Tree/SCurveEditorTreePin.h"
+#include "SCurviestCurveEditorTreePin.h"
 
 #include "CurviestCurve.h"
 
@@ -59,7 +59,7 @@ struct FCurviestCurveAssetEditorTreeParentItem : public ICurveEditorTreeItem
 
 		else if (InColumnName == ColumnNames.PinHeader)
 		{
-			return SNew(SCurveEditorTreePin, InCurveEditor, InTreeItemID, TableRow);
+			return SNew(SCurviestCurveEditorTreePin, InCurveEditor, InTreeItemID, TableRow);
 		}
 
 		return nullptr;
@@ -105,7 +105,7 @@ struct FCurviestCurveAssetEditorTreeItem : public ICurveEditorTreeItem
 		}
 		else if (InColumnName == ColumnNames.PinHeader)
 		{
-			return SNew(SCurveEditorTreePin, InCurveEditor, InTreeItemID, TableRow);
+			return SNew(SCurviestCurveEditorTreePin, InCurveEditor, InTreeItemID, TableRow);
 		}
 
 		return nullptr;
@@ -288,10 +288,7 @@ TSharedRef<SDockTab> FCurviestCurveAssetEditor::SpawnTab_CurveAsset(const FSpawn
 	CurveEditor->SetBounds(MoveTemp(EditorBounds));
 
 	CurveEditorPanel = SNew(SCurveEditorPanel, CurveEditor.ToSharedRef())
-		.TreeContent()
-		[
-			SNew(SCurveEditorTree, CurveEditor)
-		];
+		.TreeContent()[SNew(SCurveEditorTree, CurveEditor)];
 
 	UCurveBase* Curve = Cast<UCurveBase>(GetEditingObject());
 	if (Curve)
@@ -327,19 +324,12 @@ void FCurviestCurveAssetEditor::RefreshTab_CurveAsset(UCurveBase *Curve)
 		// Clear out the old
 		TArray<FCurveEditorTreeItemID> TreeIds;
 		CurveEditor->GetTree()->GetAllItems().GetKeys(TreeIds);
-
-		TArray<FCurveModelID> CurveIds;
-		CurveEditor->GetCurves().GetKeys(CurveIds);
-
 		for (FCurveEditorTreeItemID TreeId : TreeIds)
 			CurveEditor->RemoveTreeItem(TreeId);
 
-		for (FCurveModelID CurveId : CurveIds)
-			CurveEditor->RemoveCurve(CurveId);
-
 		TreeItemIdMaps.Empty();
+		
 		AddCurvesToCurveEditor();
-		RegenerateMenusAndToolbars();
 	}
 }
 
