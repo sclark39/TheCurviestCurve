@@ -1,7 +1,7 @@
 {
   "FileVersion": 3,
-  "Version": 2,
-  "VersionName": "2",
+  "Version": 3,
+  "VersionName": "2.1",
   "FriendlyName": "The Curviest Curve",
   "Description": "Infinite number of named curves stored within a single curve asset",
   "Category": "Other",
@@ -23,7 +23,7 @@
     {
       "Name": "TheCurviestCurveEditor",
       "Type": "Editor",
-      "LoadingPhase": "PostEngineInit",
+      "LoadingPhase": "PreDefault",
  	    "WhitelistPlatforms": [  "Win64", "Win32", "XboxOne", "PS4", "Switch" ]
     }
   ]
