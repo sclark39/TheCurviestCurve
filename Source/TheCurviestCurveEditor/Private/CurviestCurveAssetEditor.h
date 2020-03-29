@@ -10,11 +10,31 @@
 #include "ICurveAssetEditor.h"
 #include "CurveEditorTypes.h"
 #include "Containers/Map.h"
+#include "RichCurveEditorModel.h"
 
 class FCurveEditor;
 class UCurveBase;
 class SCurveEditorPanel;
-class SCurveEditorTree;
+class SCurviestCurveEditorTree;
+
+
+class FCurviestCurveModel : public FRichCurveEditorModel
+{
+public:
+	FCurviestCurveModel(FRichCurve* InRichCurve, UObject* InOwner)
+		: FRichCurveEditorModel(InRichCurve, InOwner)
+	{}
+
+	virtual bool IsReadOnly() const override {
+		return bIsLocked;
+	}
+
+	void SetLocked(bool bLocked) { this->bIsLocked = bLocked; }
+
+protected:
+	bool bIsLocked = false;
+};
+
 
 class FCurviestCurveAssetEditor :  public ICurveAssetEditor
 {
@@ -63,7 +83,7 @@ private:
 private:
 	TSharedPtr<FCurveEditor> CurveEditor;
 	TSharedPtr<SCurveEditorPanel> CurveEditorPanel;
-	TSharedPtr<SCurveEditorTree> CurveEditorTree;
+	TSharedPtr<SCurviestCurveEditorTree> CurveEditorTree;
 
 	/**	The tab id for the curve asset tab */
 	static const FName CurveTabId;

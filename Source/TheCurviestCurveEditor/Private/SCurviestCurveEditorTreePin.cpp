@@ -101,6 +101,23 @@ bool SCurviestCurveEditorTreePin::IsSelectedRecursive(FCurveEditorTreeItemID InT
 	return false;
 }
 
+bool SCurviestCurveEditorTreePin::IsChildSelectedRecursive(FCurveEditorTreeItemID InTreeItem, FCurveEditor* CurveEditor) const
+{
+	const FCurveEditorTreeItem *Item = CurveEditor->GetTree()->FindItem(InTreeItem);
+	if (Item)
+	{
+		
+		const bool bIsSelected = CurveEditor->GetTreeSelectionState(InTreeItem) == ECurveEditorTreeSelectionState::Explicit;
+		if (bIsSelected)
+			return true;
+		
+		for (auto ChildId : Item->GetChildren())
+			if (IsChildSelectedRecursive(ChildId, CurveEditor))
+				return true;
+	}
+	return false;
+}
+
 bool SCurviestCurveEditorTreePin::IsPinnedRecursive(FCurveEditorTreeItemID InTreeItem, FCurveEditor* CurveEditor) const
 {
 	const FCurveEditorTreeItem *Item = CurveEditor->GetTree()->FindItem(InTreeItem);	
@@ -112,7 +129,7 @@ bool SCurviestCurveEditorTreePin::IsPinnedRecursive(FCurveEditorTreeItemID InTre
 
 		if (Curves.Num() == 0)
 		{
-			const bool bAnyChildren = Algo::AnyOf(Children, [this, CurveEditor](FCurveEditorTreeItemID In)
+			const bool bAnyChildren = Algo::AllOf(Children, [this, CurveEditor](FCurveEditorTreeItemID In)
 			{
 				return this->IsPinnedRecursive(In, CurveEditor);
 			});
@@ -135,6 +152,42 @@ bool SCurviestCurveEditorTreePin::IsPinnedRecursive(FCurveEditorTreeItemID InTre
 	return false;
 }
 
+
+bool SCurviestCurveEditorTreePin::IsChildPinnedRecursive(FCurveEditorTreeItemID InTreeItem, FCurveEditor* CurveEditor) const
+{
+	const FCurveEditorTreeItem *Item = CurveEditor->GetTree()->FindItem(InTreeItem);
+
+	if (Item)
+	{
+		TArrayView<const FCurveModelID>          Curves = Item->GetCurves();
+		TArrayView<const FCurveEditorTreeItemID> Children = Item->GetChildren();
+
+		if (Curves.Num() == 0)
+		{
+			const bool bAnyChildren = Algo::AnyOf(Children, [this, CurveEditor](FCurveEditorTreeItemID In)
+			{
+				return this->IsChildPinnedRecursive(In, CurveEditor);
+			});
+			return Children.Num() > 0 && bAnyChildren;
+		}
+		else
+		{
+			const bool bAllChildren = Algo::AllOf(Children, [this, CurveEditor](FCurveEditorTreeItemID In)
+			{
+				return this->IsChildPinnedRecursive(In, CurveEditor);
+			});
+			const bool bAllCurves = Algo::AllOf(Curves, [CurveEditor](FCurveModelID In)
+			{
+				return CurveEditor->IsCurvePinned(In);
+			});
+			return bAllChildren && bAllCurves;
+		}
+	}
+
+	return false;
+}
+
+
 EVisibility SCurviestCurveEditorTreePin::GetPinVisibility() const
 {
 	TSharedPtr<FCurveEditor> CurveEditor = WeakCurveEditor.Pin();
@@ -142,16 +195,6 @@ EVisibility SCurviestCurveEditorTreePin::GetPinVisibility() const
 	TSharedPtr<SWidget> RowWidget = Row ? TSharedPtr<SWidget>(Row->AsWidget()) : nullptr;
 
 	return EVisibility::Visible;
-	/*
-	if (RowWidget && RowWidget->IsHovered())
-	{
-		return EVisibility::Visible;
-	}
-	else if (CurveEditor && IsPinnedRecursive(TreeItemID, CurveEditor.Get()))
-	{
-		return EVisibility::Visible;
-	}
-	return EVisibility::Collapsed;*/
 }
 
 const FSlateBrush* SCurviestCurveEditorTreePin::GetPinBrush() const
@@ -162,10 +205,14 @@ const FSlateBrush* SCurviestCurveEditorTreePin::GetPinBrush() const
 	{
 		if (IsPinnedRecursive(TreeItemID, CurveEditor.Get()))
 		{
-			return FEditorStyle::GetBrush("GenericCurveEditor.Pin_Active");
+			return FEditorStyle::GetBrush("Level.VisibleIcon16x");
+			//return FEditorStyle::GetBrush("GenericCurveEditor.Pin_Active");
 		}
 
-		if (IsSelectedRecursive(TreeItemID, CurveEditor.Get()))
+		if (IsSelectedRecursive(TreeItemID, CurveEditor.Get())
+			|| IsChildSelectedRecursive(TreeItemID, CurveEditor.Get())
+			|| IsChildPinnedRecursive(TreeItemID, CurveEditor.Get())
+		)
 			return FEditorStyle::GetBrush("Level.VisibleIcon16x");
 	}
 

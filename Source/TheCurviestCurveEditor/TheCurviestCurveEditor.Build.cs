@@ -41,6 +41,7 @@ public class TheCurviestCurveEditor : ModuleRules
 				"CurveAssetEditor",
 				"Slate",
 				"SlateCore",
+				"InputCore",
 				"UnrealEd",
 				"AssetTools",
 				"KismetCompiler",

@@ -1,7 +1,7 @@
 {
   "FileVersion": 3,
-  "Version": 3,
-  "VersionName": "2.1",
+  "Version": 4,
+  "VersionName": "2.2",
   "FriendlyName": "The Curviest Curve",
   "Description": "Infinite number of named curves stored within a single curve asset",
   "Category": "Other",

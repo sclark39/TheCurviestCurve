@@ -11,7 +11,6 @@
 #include "CurveAssetEditorModule.h"
 #include "CurveEditor.h"
 #include "SCurveEditorPanel.h"
-#include "RichCurveEditorModel.h"
 #include "CurveEditorCommands.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "Widgets/Input/SNumericDropDown.h"
@@ -21,8 +20,9 @@
 #include "Widgets/SFrameRatePicker.h"
 #include "CommonFrameRates.h"
 #include "Tree/ICurveEditorTreeItem.h"
-#include "Tree/SCurveEditorTree.h"
+#include "SCurviestCurveEditorTree.h"
 #include "SCurviestCurveEditorTreePin.h"
+#include "SCurviestCurveEditorTreeLock.h"
 
 #include "CurviestCurve.h"
 
@@ -59,7 +59,23 @@ struct FCurviestCurveAssetEditorTreeParentItem : public ICurveEditorTreeItem
 
 		else if (InColumnName == ColumnNames.PinHeader)
 		{
-			return SNew(SCurviestCurveEditorTreePin, InCurveEditor, InTreeItemID, TableRow);
+			return SNew(SHorizontalBox)
+
+				+ SHorizontalBox::Slot()
+				.VAlign(VAlign_Center)
+				.HAlign(HAlign_Right)
+				.AutoWidth()
+				[
+					SNew(SCurviestCurveEditorTreePin, InCurveEditor, InTreeItemID, TableRow)
+				]
+
+			+ SHorizontalBox::Slot()
+				.VAlign(VAlign_Center)
+				.HAlign(HAlign_Right)
+				.AutoWidth()
+				[
+					SNew(SCurviestCurveEditorTreeLock, InCurveEditor, InTreeItemID, TableRow)
+				];
 		}
 
 		return nullptr;
@@ -105,7 +121,24 @@ struct FCurviestCurveAssetEditorTreeItem : public ICurveEditorTreeItem
 		}
 		else if (InColumnName == ColumnNames.PinHeader)
 		{
-			return SNew(SCurviestCurveEditorTreePin, InCurveEditor, InTreeItemID, TableRow);
+			return SNew(SHorizontalBox)
+
+				+ SHorizontalBox::Slot()
+				.VAlign(VAlign_Center)
+				.HAlign(HAlign_Right)
+				.AutoWidth()
+				[
+					SNew(SCurviestCurveEditorTreePin, InCurveEditor, InTreeItemID, TableRow)
+				]
+
+			+ SHorizontalBox::Slot()
+				.VAlign(VAlign_Center)
+				.HAlign(HAlign_Right)
+				.AutoWidth()
+				[
+					SNew(SCurviestCurveEditorTreeLock, InCurveEditor, InTreeItemID, TableRow)
+				];
+
 		}
 
 		return nullptr;
@@ -118,7 +151,7 @@ struct FCurviestCurveAssetEditorTreeItem : public ICurveEditorTreeItem
 			return;
 		}
 
-		TUniquePtr<FRichCurveEditorModel> NewCurve = MakeUnique<FRichCurveEditorModel>(static_cast<FRichCurve*>(EditInfo.CurveToEdit), CurveOwner.Get());
+		TUniquePtr<FRichCurveEditorModel> NewCurve = MakeUnique<FCurviestCurveModel>(static_cast<FRichCurve*>(EditInfo.CurveToEdit), CurveOwner.Get());
 		NewCurve->SetShortDisplayName(CurveName);
 		NewCurve->SetColor(CurveColor);
 		OutCurveModels.Add(MoveTemp(NewCurve));
@@ -287,7 +320,7 @@ TSharedRef<SDockTab> FCurviestCurveAssetEditor::SpawnTab_CurveAsset(const FSpawn
 	EditorBounds->SetInputBounds(-1.05, 1.05);
 	CurveEditor->SetBounds(MoveTemp(EditorBounds));
 	
-	CurveEditorTree = SNew(SCurveEditorTree, CurveEditor);
+	CurveEditorTree = SNew(SCurviestCurveEditorTree, CurveEditor);
 	CurveEditorPanel = SNew(SCurveEditorPanel, CurveEditor.ToSharedRef())
 		.TreeContent()[CurveEditorTree.ToSharedRef()];
 
