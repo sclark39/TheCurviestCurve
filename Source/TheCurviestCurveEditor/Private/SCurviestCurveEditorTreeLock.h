@@ -6,7 +6,7 @@
 #include "Widgets/SCompoundWidget.h"
 
 #include "CurveEditorTypes.h"
-#include "CurveEditorTreeTraits.h"
+#include "Tree/CurveEditorTreeTraits.h"
 
 class FCurveEditor;
 class ITableRow;

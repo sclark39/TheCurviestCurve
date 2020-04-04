@@ -4,7 +4,7 @@
 
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/Views/STreeView.h"
-#include "CurveEditorTreeTraits.h"
+#include "Tree/CurveEditorTreeTraits.h"
 #include "CurveEditorTypes.h"
 
 class FCurveEditor;
