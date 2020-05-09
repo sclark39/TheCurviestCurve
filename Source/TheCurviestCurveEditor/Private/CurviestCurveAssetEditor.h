@@ -18,11 +18,11 @@ class SCurveEditorPanel;
 class SCurviestCurveEditorTree;
 
 
-class FCurviestCurveModel : public FRichCurveEditorModel
+class FCurviestCurveModel : public FRichCurveEditorModelRaw
 {
 public:
 	FCurviestCurveModel(FRichCurve* InRichCurve, UObject* InOwner)
-		: FRichCurveEditorModel(InRichCurve, InOwner)
+		: FRichCurveEditorModelRaw(InRichCurve, InOwner)
 	{}
 
 	virtual bool IsReadOnly() const override {
