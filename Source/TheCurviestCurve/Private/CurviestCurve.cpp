@@ -145,9 +145,17 @@ void UCurveCurviest::PostEditChangeChainProperty(struct FPropertyChangedChainEve
 			}
 			break;
 
+		case EPropertyChangeType::Duplicate:
+			// For whatever reason, duplicate adds the new item in the index before the selected
+			// but we want to fix up the name on the later one, not the earlier...
+			if (0 <= CurveIdx && CurveIdx + 1 < CurveData.Num())
+			{
+				MakeCurveNameUnique(CurveIdx + 1);
+			}
+			break;
+
 		case EPropertyChangeType::ValueSet:
-		{
-			if (0 < CurveIdx)
+			if (0 <= CurveIdx)
 			{
 				if (PropName == "Name")
 				{
@@ -158,7 +166,6 @@ void UCurveCurviest::PostEditChangeChainProperty(struct FPropertyChangedChainEve
 					CurveData[CurveIdx].Color.A = 1.0f;
 				}
 			}
-		}
 			break;
 
 		case EPropertyChangeType::ArrayClear:
