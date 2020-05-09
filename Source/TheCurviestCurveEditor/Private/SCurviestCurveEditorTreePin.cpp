@@ -50,14 +50,16 @@ FReply SCurviestCurveEditorTreePin::TogglePinned()
 
 void SCurviestCurveEditorTreePin::PinRecursive(FCurveEditorTreeItemID InTreeItem, FCurveEditor* CurveEditor) const
 {
-	FCurveEditorTreeItem& Item = CurveEditor->GetTreeItem(InTreeItem);
+	FCurveEditorTreeItem* Item = CurveEditor->FindTreeItem(InTreeItem);
+	if (!ensureMsgf(Item != nullptr, TEXT("Can't find curve editor tree item. Ignoring pinning request.")))
+		return;
 
-	for (FCurveModelID CurveID : Item.GetOrCreateCurves(CurveEditor))
+	for (FCurveModelID CurveID : Item->GetOrCreateCurves(CurveEditor))
 	{
 		CurveEditor->PinCurve(CurveID);
 	}
 
-	for (FCurveEditorTreeItemID Child : Item.GetChildren())
+	for (FCurveEditorTreeItemID Child : Item->GetChildren())
 	{
 		PinRecursive(Child, CurveEditor);
 	}
@@ -67,8 +69,11 @@ void SCurviestCurveEditorTreePin::UnpinRecursive(FCurveEditorTreeItemID InTreeIt
 {
 	const bool bIsSelected = CurveEditor->GetTreeSelectionState(InTreeItem) == ECurveEditorTreeSelectionState::Explicit;
 
-	FCurveEditorTreeItem& Item = CurveEditor->GetTreeItem(InTreeItem);
-	for (FCurveModelID CurveID : Item.GetCurves())
+	FCurveEditorTreeItem* Item = CurveEditor->FindTreeItem(InTreeItem);
+	if (!ensureMsgf(Item != nullptr, TEXT("Can't find curve editor tree item. Ignoring unpinning request.")))
+		return;
+
+	for (FCurveModelID CurveID : Item->GetCurves())
 	{
 		if (bIsSelected)
 		{
@@ -76,11 +81,11 @@ void SCurviestCurveEditorTreePin::UnpinRecursive(FCurveEditorTreeItemID InTreeIt
 		}
 		else
 		{
-			Item.DestroyCurves(CurveEditor);
+			Item->DestroyCurves(CurveEditor);
 		}
 	}
 
-	for (FCurveEditorTreeItemID Child : Item.GetChildren())
+	for (FCurveEditorTreeItemID Child : Item->GetChildren())
 	{
 		UnpinRecursive(Child, CurveEditor);
 	}
@@ -88,7 +93,7 @@ void SCurviestCurveEditorTreePin::UnpinRecursive(FCurveEditorTreeItemID InTreeIt
 
 bool SCurviestCurveEditorTreePin::IsSelectedRecursive(FCurveEditorTreeItemID InTreeItem, FCurveEditor* CurveEditor) const
 {
-	const FCurveEditorTreeItem *Item = CurveEditor->GetTree()->FindItem(InTreeItem);
+	const FCurveEditorTreeItem *Item = CurveEditor->FindTreeItem(InTreeItem);
 	if (Item)
 	{
 		const bool bIsSelected = CurveEditor->GetTreeSelectionState(InTreeItem) == ECurveEditorTreeSelectionState::Explicit;
@@ -103,7 +108,7 @@ bool SCurviestCurveEditorTreePin::IsSelectedRecursive(FCurveEditorTreeItemID InT
 
 bool SCurviestCurveEditorTreePin::IsChildSelectedRecursive(FCurveEditorTreeItemID InTreeItem, FCurveEditor* CurveEditor) const
 {
-	const FCurveEditorTreeItem *Item = CurveEditor->GetTree()->FindItem(InTreeItem);
+	const FCurveEditorTreeItem *Item = CurveEditor->FindTreeItem(InTreeItem);
 	if (Item)
 	{
 		
@@ -120,7 +125,7 @@ bool SCurviestCurveEditorTreePin::IsChildSelectedRecursive(FCurveEditorTreeItemI
 
 bool SCurviestCurveEditorTreePin::IsPinnedRecursive(FCurveEditorTreeItemID InTreeItem, FCurveEditor* CurveEditor) const
 {
-	const FCurveEditorTreeItem *Item = CurveEditor->GetTree()->FindItem(InTreeItem);	
+	const FCurveEditorTreeItem *Item = CurveEditor->FindTreeItem(InTreeItem);
 
 	if (Item)
 	{
@@ -155,7 +160,7 @@ bool SCurviestCurveEditorTreePin::IsPinnedRecursive(FCurveEditorTreeItemID InTre
 
 bool SCurviestCurveEditorTreePin::IsChildPinnedRecursive(FCurveEditorTreeItemID InTreeItem, FCurveEditor* CurveEditor) const
 {
-	const FCurveEditorTreeItem *Item = CurveEditor->GetTree()->FindItem(InTreeItem);
+	const FCurveEditorTreeItem *Item = CurveEditor->FindTreeItem(InTreeItem);
 
 	if (Item)
 	{

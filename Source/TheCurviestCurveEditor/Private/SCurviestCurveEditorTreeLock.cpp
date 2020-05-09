@@ -51,16 +51,18 @@ FReply SCurviestCurveEditorTreeLock::ToggleLocked()
 
 void SCurviestCurveEditorTreeLock::LockRecursive(FCurveEditorTreeItemID InTreeItem, FCurveEditor* CurveEditor) const
 {
-	FCurveEditorTreeItem& Item = CurveEditor->GetTreeItem(InTreeItem);
+	FCurveEditorTreeItem* Item = CurveEditor->FindTreeItem(InTreeItem);
+	if (!ensureMsgf(Item != nullptr, TEXT("Can't find curve editor tree item. Ignoring lock request.")))
+		return;
 
-	for (FCurveModelID CurveID : Item.GetOrCreateCurves(CurveEditor))
+	for (FCurveModelID CurveID : Item->GetOrCreateCurves(CurveEditor))
 	{
 		FCurveModel *CurveModel = CurveEditor->FindCurve(CurveID);
 		if (FCurviestCurveModel *CurviestCurveModel = static_cast<FCurviestCurveModel*>(CurveModel))
 			CurviestCurveModel->SetLocked(true);
 	}
 
-	for (FCurveEditorTreeItemID Child : Item.GetChildren())
+	for (FCurveEditorTreeItemID Child : Item->GetChildren())
 	{
 		LockRecursive(Child, CurveEditor);
 	}
@@ -70,15 +72,18 @@ void SCurviestCurveEditorTreeLock::UnlockRecursive(FCurveEditorTreeItemID InTree
 {
 	const bool bIsSelected = CurveEditor->GetTreeSelectionState(InTreeItem) == ECurveEditorTreeSelectionState::Explicit;
 
-	FCurveEditorTreeItem& Item = CurveEditor->GetTreeItem(InTreeItem);
-	for (FCurveModelID CurveID : Item.GetCurves())
+	FCurveEditorTreeItem* Item = CurveEditor->FindTreeItem(InTreeItem);
+	if (!ensureMsgf(Item != nullptr, TEXT("Can't find curve editor tree item. Ignoring unlock request.")))
+		return;
+
+	for (FCurveModelID CurveID : Item->GetCurves())
 	{
 		FCurveModel *CurveModel = CurveEditor->FindCurve(CurveID);
 		if (FCurviestCurveModel *CurviestCurveModel = static_cast<FCurviestCurveModel*>(CurveModel))
 			CurviestCurveModel->SetLocked(false);
 	}
 
-	for (FCurveEditorTreeItemID Child : Item.GetChildren())
+	for (FCurveEditorTreeItemID Child : Item->GetChildren())
 	{
 		UnlockRecursive(Child, CurveEditor);
 	}
@@ -86,7 +91,7 @@ void SCurviestCurveEditorTreeLock::UnlockRecursive(FCurveEditorTreeItemID InTree
 
 bool SCurviestCurveEditorTreeLock::IsLockedRecursive(FCurveEditorTreeItemID InTreeItem, FCurveEditor* CurveEditor) const
 {
-	const FCurveEditorTreeItem *Item = CurveEditor->GetTree()->FindItem(InTreeItem);	
+	const FCurveEditorTreeItem *Item = CurveEditor->FindTreeItem(InTreeItem);
 
 	if (Item)
 	{
