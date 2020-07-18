@@ -4,13 +4,15 @@
 
 float UCurveCurviestBlueprintUtils::GetValueFromCurve(UCurveBase *Curve, FName Name, float InTime)
 {
-	TArray<FRichCurveEditInfo> EditCurves = Curve->GetCurves();
-	for (auto Elem : EditCurves)
+	if (Curve)
 	{
-		if (Elem.CurveName == Name)
-			return Elem.CurveToEdit->Eval(InTime);
+		TArray<FRichCurveEditInfo> EditCurves = Curve->GetCurves();
+		for (auto Elem : EditCurves)
+		{
+			if (Elem.CurveName == Name)
+				return Elem.CurveToEdit->Eval(InTime);
+		}
 	}
-
 	return 0.0f;
 }
 
