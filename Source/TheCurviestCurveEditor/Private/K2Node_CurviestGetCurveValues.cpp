@@ -225,7 +225,7 @@ void UK2Node_CurviestGetCurveValues::GetNodeContextMenuActions(UToolMenu* Menu, 
 		LOCTEXT("RefreshNodeTooltip", "Refresh this node."),
 		FSlateIcon(),
 		FUIAction(
-			FExecuteAction::CreateUObject(this, &UK2Node_CurviestGetCurveValues::RefreshTemplateCurve),
+			FExecuteAction::CreateUObject(const_cast<UK2Node_CurviestGetCurveValues*>(this), &UK2Node_CurviestGetCurveValues::RefreshTemplateCurve),
 			FCanExecuteAction(),
 			FIsActionChecked()
 		)

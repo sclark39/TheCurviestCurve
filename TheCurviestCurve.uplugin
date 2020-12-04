@@ -1,30 +1,43 @@
 {
-  "FileVersion": 3,
-  "Version": 4,
-  "VersionName": "2.2",
-  "FriendlyName": "The Curviest Curve",
-  "Description": "Infinite number of named curves stored within a single curve asset",
-  "Category": "Other",
-  "CreatedBy": "Skyler Clark",
-  "CreatedByURL": "http://skylerclark.com",
-  "DocsURL": "",
-  "MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/b5fce2cbfa644b1a8e1fcb7683a881d2",
-  "SupportURL": "https://twitter.com/sclark39",
-  "CanContainContent": true,
-  "IsBetaVersion": true,
-  "Installed": false,
-  "Modules": [
-    {
-      "Name": "TheCurviestCurve",
-      "Type": "Runtime",
-      "LoadingPhase": "Default",
- 	    "WhitelistPlatforms": [  "Win64", "Win32", "XboxOne", "PS4", "Switch" ]
-    },
-    {
-      "Name": "TheCurviestCurveEditor",
-      "Type": "Editor",
-      "LoadingPhase": "PreDefault",
- 	    "WhitelistPlatforms": [  "Win64", "Win32", "XboxOne", "PS4", "Switch" ]
-    }
-  ]
+	"FileVersion": 3,
+	"Version": 4,
+	"VersionName": "2.3",
+	"FriendlyName": "The Curviest Curve",
+	"Description": "Infinite number of named curves stored within a single curve asset",
+	"Category": "Other",
+	"CreatedBy": "Skyler Clark",
+	"CreatedByURL": "http://skylerclark.com",
+	"DocsURL": "",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/b5fce2cbfa644b1a8e1fcb7683a881d2",
+	"SupportURL": "https://twitter.com/sclark39",
+	"CanContainContent": true,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "TheCurviestCurve",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Win32",
+				"XboxOne",
+				"PS4",
+				"Switch"
+			]
+		},
+		{
+			"Name": "TheCurviestCurveEditor",
+			"Type": "Editor",
+			"LoadingPhase": "PreDefault",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Win32",
+				"XboxOne",
+				"PS4",
+				"Switch"
+			]
+		}
+	]
 }
