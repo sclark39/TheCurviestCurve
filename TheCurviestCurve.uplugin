@@ -15,18 +15,30 @@
 	"IsExperimentalVersion": false,
 	"Installed": false,
 	"Modules": [
-		{
-			"Name": "TheCurviestCurve",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"WhitelistPlatforms": [
-				"Win64",
-				"Win32",
-				"XboxOne",
-				"PS4",
-				"Switch"
-			]
-		},
+    {
+      "Name": "TheCurviestCurve",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Win32",
+        "XboxOne",
+        "PS4",
+        "Switch"
+      ]
+    },
+    {
+      "Name": "TheCurviestCurveUncooked",
+      "Type": "UncookedOnly",
+      "LoadingPhase": "Default",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Win32",
+        "XboxOne",
+        "PS4",
+        "Switch"
+      ]
+    },
 		{
 			"Name": "TheCurviestCurveEditor",
 			"Type": "Editor",
