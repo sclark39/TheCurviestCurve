@@ -2,6 +2,8 @@
 
 #include "CurviestCurve.h"
 
+static FName NAME_CurveDefault(TEXT("Curve_0"));
+
 float UCurveCurviestBlueprintUtils::GetValueFromCurve(UCurveBase *Curve, FName Name, float InTime)
 {
 	if (Curve)
@@ -16,24 +18,123 @@ float UCurveCurviestBlueprintUtils::GetValueFromCurve(UCurveBase *Curve, FName N
 	return 0.0f;
 }
 
+float UCurveCurviestBlueprintUtils::GetValueFromTaggedCurve(UCurveCurviest *Curve, FGameplayTag Tag, float InTime, bool bAllowParamLookup)
+{
+	if (Curve)
+	{
+		float Value = 0.0f;
+		Curve->GetFloatValueFromTaggedCurve(Tag, InTime, Value, bAllowParamLookup);
+		return Value;
+	}
+	return 0.0f;
+}
 
 UCurveCurviest::UCurveCurviest()
 {
-	CurveData.Add(FCurviestCurveData("Curve_0", FLinearColor::MakeRandomColor()));
+	CurveData.Add(FCurviestCurveData(NAME_CurveDefault, FLinearColor::MakeRandomColor()));
+	bLookupsNeedRebuild = true;
 }
 
 UCurveCurviest::~UCurveCurviest()
 {
 }
 
-
-float UCurveCurviest::GetFloatValue(FName Key, float InTime) const
+void UCurveCurviest::RebuildLookupMaps()
 {
-	for (const auto& Data : CurveData)
-		if (Data.Name == Key)
-			return Data.Curve.Eval(InTime);
-	return 0;
+	if (bLookupsNeedRebuild)
+	{
+		CurveLookupByName.Reset();
+		CurveLookupByTag.Reset();
+		for (int i = 0; i < CurveData.Num(); i++)
+		{
+			auto &Data = CurveData[i];
+			CurveLookupByName.Add(Data.Name, i);
+			CurveLookupByTag.Add(Data.IdentifierTag, i);
+		}
+
+		ParamLookupByTag.Reset();
+		for (int i = 0; i < Params.Num(); i++)
+		{
+			auto &Data = Params[i];
+			ParamLookupByTag.Add(Data.IdentifierTag, i);
+		}
+
+
+		bLookupsNeedRebuild = false;
+	}
 }
+
+
+float UCurveCurviest::GetFloatValue(FName Name, float InTime) const
+{
+	float ValueOut = 0.0f;
+	GetFloatValueFromNamedCurve(Name, InTime, ValueOut);
+	return ValueOut;
+}
+
+
+bool UCurveCurviest::GetFloatValueFromNamedCurve(FName Name, float InTime, float &ValueOut) const
+{
+	const_cast<UCurveCurviest*>(this)->RebuildLookupMaps();
+
+	const int *CurveIdx = CurveLookupByName.Find(Name);
+	if (CurveIdx)
+	{
+		ValueOut = CurveData[*CurveIdx].Curve.Eval(InTime);
+		return true;
+	}
+	return false;
+}
+
+
+bool UCurveCurviest::GetFloatValueFromTaggedCurve(FGameplayTag IdentifierTag, float InTime, float &ValueOut, bool bAllowParamLookup) const
+{
+	const_cast<UCurveCurviest*>(this)->RebuildLookupMaps();
+
+	const int *CurveIdx = CurveLookupByTag.Find(IdentifierTag);
+	if (CurveIdx)
+	{
+		ValueOut = CurveData[*CurveIdx].Curve.Eval(InTime);
+		return true;
+	}
+
+	if (bAllowParamLookup)
+	{
+		const int *ParamIdx = ParamLookupByTag.Find(IdentifierTag);
+		if (ParamIdx)
+		{
+			ValueOut = Params[*ParamIdx].Value;
+			return true;
+		}
+	}
+
+	// Check for parent data
+	if (Parent)
+		return Parent->GetFloatValueFromTaggedCurve(IdentifierTag, InTime, ValueOut, bAllowParamLookup);
+
+	return false;
+}	
+
+
+bool UCurveCurviest::GetFloatValueFromTaggedParam(FGameplayTag IdentifierTag, float &ValueOut) const
+{
+	const_cast<UCurveCurviest*>(this)->RebuildLookupMaps();
+
+	const int *ParamIdx = ParamLookupByTag.Find(IdentifierTag);
+	if (ParamIdx)
+	{
+		ValueOut = Params[*ParamIdx].Value;
+		return true;
+	}
+
+	// Check for parent data
+	if (Parent)
+		return Parent->GetFloatValueFromTaggedParam(IdentifierTag, ValueOut);
+
+	return false;
+
+}
+
 
 TArray<FRichCurveEditInfoConst> UCurveCurviest::GetCurves() const
 {
@@ -79,14 +180,22 @@ bool UCurveCurviest::operator==(const UCurveCurviest& Curve) const
 
 #if WITH_EDITOR
 
-
-
 void UCurveCurviest::MakeCurveNameUnique( int CurveIdx )
 {
 	FCurviestCurveData &Curve = CurveData[CurveIdx];
 
+	if (Curve.Name == NAME_None || Curve.Name == NAME_CurveDefault)
+	{
+		Curve.Name = NAME_CurveDefault;
+		if (Curve.IdentifierTag != FGameplayTag::EmptyTag)
+		{
+			Curve.Name = Curve.IdentifierTag.GetTagName();
+		}
+	}
+
 	// Find Name Base
 	FString BaseName = Curve.Name.ToString();
+
 	int NewNameIdx = 0;
 	FString NewName = BaseName;
 
@@ -126,22 +235,34 @@ void UCurveCurviest::PreEditChange(class FEditPropertyChain& PropertyAboutToChan
 	Super::PreEditChange(PropertyAboutToChange);
 
 	OldCurveCount = CurveData.Num();
+}
 
+void UCurveCurviest::PostEditChangeProperty(struct FPropertyChangedEvent& e)
+{
+	const FName PropName = e.GetPropertyName();
+	if (PropName == GET_MEMBER_NAME_CHECKED(UCurveCurviest, Parent))
+	{
+		if (Parent == this)
+			Parent = nullptr;
+	}
 }
 
 void UCurveCurviest::PostEditChangeChainProperty(struct FPropertyChangedChainEvent& e)
 {
 	Super::PostEditChangeChainProperty(e);
-	
+
 	const FName PropName = e.GetPropertyName();
-	int CurveIdx = e.GetArrayIndex("CurveData");
-	
-	switch (e.ChangeType)
+	const FName ArrayName = e.PropertyChain.GetHead()->GetValue()->GetFName();
+
+	if (ArrayName == GET_MEMBER_NAME_CHECKED(UCurveCurviest, CurveData))
 	{
+		int CurveIdx = e.GetArrayIndex(GET_MEMBER_NAME_STRING_CHECKED(UCurveCurviest, CurveData));
+		switch (e.ChangeType)
+		{
 		case EPropertyChangeType::ArrayAdd:
 			if (OldCurveCount < CurveData.Num())
 			{
-				CurveData[CurveIdx].Name = "Curve_0";
+				CurveData[CurveIdx].Name = NAME_CurveDefault;
 				CurveData[CurveIdx].Color = FLinearColor::MakeRandomColor();
 				MakeCurveNameUnique(CurveIdx);
 			}
@@ -172,10 +293,18 @@ void UCurveCurviest::PostEditChangeChainProperty(struct FPropertyChangedChainEve
 
 		case EPropertyChangeType::ArrayClear:
 			break;
-		
-	}
 
-	OnCurveMapChanged.Broadcast( this );
+		}
+
+		OnCurveMapChanged.Broadcast(this);
+
+		bLookupsNeedRebuild = true;
+
+	}
+	else if (ArrayName == GET_MEMBER_NAME_CHECKED(UCurveCurviest, Params))
+	{
+		bLookupsNeedRebuild = true;
+	}
 }
 
 #endif

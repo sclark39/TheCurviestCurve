@@ -36,6 +36,7 @@ public class TheCurviestCurveUncooked : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
+				"GameplayTags",
 				"Slate",
 				"SlateCore",
 				"InputCore",

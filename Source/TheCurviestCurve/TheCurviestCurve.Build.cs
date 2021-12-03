@@ -36,6 +36,7 @@ public class TheCurviestCurve : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
+				"GameplayTags"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
