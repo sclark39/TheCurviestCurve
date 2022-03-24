@@ -30,7 +30,7 @@ public:
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	virtual void PinDefaultValueChanged(UEdGraphPin* Pin) override;
 	virtual void PreloadRequiredAssets() override;
-#if ENGINE_MINOR_VERSION < 24
+#if ENGINE_MAJOR_VERSION == 4 && ENGINE_MINOR_VERSION < 24
 	virtual void GetContextMenuActions(const FGraphNodeContextMenuBuilder& Context) const override;
 #else
 	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;

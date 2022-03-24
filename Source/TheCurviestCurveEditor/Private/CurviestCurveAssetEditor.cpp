@@ -192,11 +192,16 @@ void FCurviestCurveAssetEditor::UnregisterTabSpawners(const TSharedRef<class FTa
 void FCurviestCurveAssetEditor::InitCurveAssetEditor( const EToolkitMode::Type Mode, const TSharedPtr< class IToolkitHost >& InitToolkitHost, UCurveBase* CurveToEdit )
 {
 
+#if ENGINE_MAJOR_VERSION == 4
 	TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_CurveAssetEditor_Layout_v1")
+#else
+	TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_CurveAssetEditor_Layout_v2")
+#endif
 		->AddArea
 		(
 			FTabManager::NewPrimaryArea()
 			->SetOrientation(Orient_Vertical)
+#if ENGINE_MAJOR_VERSION == 4
 			->Split
 			(
 				FTabManager::NewStack()
@@ -204,6 +209,7 @@ void FCurviestCurveAssetEditor::InitCurveAssetEditor( const EToolkitMode::Type M
 				->SetHideTabWell(true)
 				->AddTab(GetToolbarTabId(), ETabState::OpenedTab)
 			)
+#endif
 			->Split
 			(
 				FTabManager::NewStack()
@@ -217,11 +223,16 @@ void FCurviestCurveAssetEditor::InitCurveAssetEditor( const EToolkitMode::Type M
 	UCurveCurviest* CurviestCurve = Cast<UCurveCurviest>(CurveToEdit);
 	if (CurviestCurve)
 	{
+#if ENGINE_MAJOR_VERSION == 4
 		StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_CurveAssetEditor_Layout_ColorCurvev2")
+#else
+		StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_CurveAssetEditor_Layout_ColorCurvev3")
+#endif
 			->AddArea
 			(
 				FTabManager::NewPrimaryArea()
 				->SetOrientation(Orient_Vertical)
+#if ENGINE_MAJOR_VERSION == 4
 				->Split
 				(
 					FTabManager::NewStack()
@@ -229,6 +240,7 @@ void FCurviestCurveAssetEditor::InitCurveAssetEditor( const EToolkitMode::Type M
 					->SetHideTabWell(true)
 					->AddTab(GetToolbarTabId(), ETabState::OpenedTab)
 				)
+#endif
 				->Split
 				(
 					FTabManager::NewSplitter()
@@ -252,7 +264,13 @@ void FCurviestCurveAssetEditor::InitCurveAssetEditor( const EToolkitMode::Type M
 			);
 
 		FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
+#if ENGINE_MAJOR_VERSION == 4
 		const FDetailsViewArgs DetailsViewArgs(false, false, false, FDetailsViewArgs::HideNameArea);
+#else
+		FDetailsViewArgs DetailsViewArgs;
+		DetailsViewArgs.bAllowSearch = false;
+		DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
+#endif
 		CurveDetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 	}
 	const bool bCreateDefaultStandaloneMenu = true;

@@ -13,7 +13,7 @@
 #include "GraphEditorSettings.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
 
-#if ENGINE_MINOR_VERSION >= 24
+#if !(ENGINE_MAJOR_VERSION == 4 && ENGINE_MINOR_VERSION < 24)
 #include "ToolMenus.h"
 #endif
 
@@ -192,7 +192,7 @@ void UK2Node_CurviestGetCurveValues::GetMenuActions(FBlueprintActionDatabaseRegi
 	}
 }
 
-#if ENGINE_MINOR_VERSION < 24
+#if ENGINE_MAJOR_VERSION == 4 && ENGINE_MINOR_VERSION < 24
 void UK2Node_CurviestGetCurveValues::GetContextMenuActions(const FGraphNodeContextMenuBuilder& Context) const
 {
 	Super::GetContextMenuActions(Context);
