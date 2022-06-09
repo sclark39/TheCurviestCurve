@@ -18,38 +18,17 @@
     {
       "Name": "TheCurviestCurve",
       "Type": "Runtime",
-      "LoadingPhase": "Default",
-      "WhitelistPlatforms": [
-        "Win64",
-        "Win32",
-        "XboxOne",
-        "PS4",
-        "Switch"
-      ]
+      "LoadingPhase": "Default"
     },
     {
       "Name": "TheCurviestCurveUncooked",
       "Type": "UncookedOnly",
-      "LoadingPhase": "Default",
-      "WhitelistPlatforms": [
-        "Win64",
-        "Win32",
-        "XboxOne",
-        "PS4",
-        "Switch"
-      ]
+      "LoadingPhase": "Default"
     },
 		{
 			"Name": "TheCurviestCurveEditor",
 			"Type": "Editor",
-			"LoadingPhase": "PreDefault",
-			"WhitelistPlatforms": [
-				"Win64",
-				"Win32",
-				"XboxOne",
-				"PS4",
-				"Switch"
-			]
+			"LoadingPhase": "PreDefault"
 		}
 	]
 }
