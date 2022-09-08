@@ -353,7 +353,9 @@ TSharedRef<SDockTab> FCurviestCurveAssetEditor::SpawnTab_CurveAsset(const FSpawn
 	}
 
 	TSharedRef<SDockTab> NewDockTab = SNew(SDockTab)
+#if ENGINE_MAJOR_VERSION == 4
 		.Icon(FEditorStyle::GetBrush("CurveAssetEditor.Tabs.Properties"))
+#endif // #if UE_MAJOR_VERSION == 5
 		.Label(FText::Format(LOCTEXT("CurveAssetEditorTitle", "{0} Curve Asset"), FText::FromString(GetTabPrefix())))
 		.TabColorScale(GetTabColorScale())
 		[
@@ -364,6 +366,9 @@ TSharedRef<SDockTab> FCurviestCurveAssetEditor::SpawnTab_CurveAsset(const FSpawn
 			CurveEditorPanel.ToSharedRef()
 		]
 		];
+#if ENGINE_MAJOR_VERSION == 5
+	NewDockTab->SetTabIcon(FEditorStyle::GetBrush("CurveAssetEditor.Tabs.Properties"));
+#endif // #if UE_MAJOR_VERSION == 5
 	
 	return NewDockTab;
 }
@@ -455,12 +460,17 @@ TSharedRef<SDockTab> FCurviestCurveAssetEditor::SpawnTab_CurveDetailsEditor(cons
 	check(Args.GetTabId().TabType == CurveDetailsTabId);
 
 	TSharedRef<SDockTab> NewDockTab = SNew(SDockTab)
+#if ENGINE_MAJOR_VERSION == 4
 		.Icon(FEditorStyle::GetBrush("CurveAssetEditor.Tabs.Properties"))
+#endif // #if UE_MAJOR_VERSION == 5
 		.Label(LOCTEXT("CurveDetailsEditor", "Curve Details Editor"))
 		.TabColorScale(GetTabColorScale())
 		[
 			CurveDetailsView.ToSharedRef()
 		];
+#if ENGINE_MAJOR_VERSION == 5
+	NewDockTab->SetTabIcon(FEditorStyle::GetBrush("CurveAssetEditor.Tabs.Properties"));
+#endif // #if UE_MAJOR_VERSION == 5
 
 	return NewDockTab;
 }
