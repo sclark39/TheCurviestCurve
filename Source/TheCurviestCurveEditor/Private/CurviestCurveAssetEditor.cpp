@@ -485,7 +485,11 @@ TSharedRef<SDockTab> FCurviestCurveAssetEditor::SpawnTab_CurveDetailsEditor(cons
 			CurveDetailsView.ToSharedRef()
 		];
 #if ENGINE_MAJOR_VERSION == 5
+#if ENGINE_MINOR_VERSION >= 1
+	NewDockTab->SetTabIcon(FAppStyle::GetBrush("CurveAssetEditor.Tabs.Properties"));
+#else // #if ENGINE_MINOR_VERSION >= 1
 	NewDockTab->SetTabIcon(FEditorStyle::GetBrush("CurveAssetEditor.Tabs.Properties"));
+#endif // #else ENGINE_MINOR_VERSION >= 1
 #endif // #if UE_MAJOR_VERSION == 5
 
 	return NewDockTab;
