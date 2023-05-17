@@ -21,7 +21,11 @@ void SCurviestCurveEditorTreePin::Construct(const FArguments& InArgs, TWeakPtr<F
 	ChildSlot
 		[
 			SNew(SButton)
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 	
+			.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
+#else // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
 			.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
+#endif // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 		
 		.Visibility(this, &SCurviestCurveEditorTreePin::GetPinVisibility)
 		.OnClicked(this, &SCurviestCurveEditorTreePin::TogglePinned)
 		[
@@ -210,7 +214,11 @@ const FSlateBrush* SCurviestCurveEditorTreePin::GetPinBrush() const
 	{
 		if (IsPinnedRecursive(TreeItemID, CurveEditor.Get()))
 		{
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 	
+			return FAppStyle::GetBrush("Level.VisibleIcon16x");
+#else // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
 			return FEditorStyle::GetBrush("Level.VisibleIcon16x");
+#endif // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 	
 			//return FEditorStyle::GetBrush("GenericCurveEditor.Pin_Active");
 		}
 
@@ -218,9 +226,17 @@ const FSlateBrush* SCurviestCurveEditorTreePin::GetPinBrush() const
 			|| IsChildSelectedRecursive(TreeItemID, CurveEditor.Get())
 			|| IsChildPinnedRecursive(TreeItemID, CurveEditor.Get())
 		)
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 		
+			return FAppStyle::GetBrush("Level.VisibleIcon16x");
+#else // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
 			return FEditorStyle::GetBrush("Level.VisibleIcon16x");
+#endif // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
 	}
 
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 	
+	return FAppStyle::GetBrush("Level.NotVisibleHighlightIcon16x");
+#else // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
 	return FEditorStyle::GetBrush("Level.NotVisibleHighlightIcon16x");
+#endif // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 	
 	//return FEditorStyle::GetBrush("GenericCurveEditor.Pin_Inactive");
 }

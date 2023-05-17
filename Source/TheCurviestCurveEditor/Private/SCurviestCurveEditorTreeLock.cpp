@@ -22,7 +22,11 @@ void SCurviestCurveEditorTreeLock::Construct(const FArguments& InArgs, TWeakPtr<
 	ChildSlot
 		[
 			SNew(SButton)
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
+			.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
+#else // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1
 			.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
+#endif // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
 		.Visibility(this, &SCurviestCurveEditorTreeLock::GetPinVisibility)
 		.OnClicked(this, &SCurviestCurveEditorTreeLock::ToggleLocked)
 		[
@@ -136,11 +140,19 @@ const FSlateBrush* SCurviestCurveEditorTreeLock::GetPinBrush() const
 	{
 		if (IsLockedRecursive(TreeItemID, CurveEditor.Get()))
 		{
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
+			return FAppStyle::GetBrush("Level.LockedIcon16x");
+#else // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1
 			return FEditorStyle::GetBrush("Level.LockedIcon16x");
+#endif // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
 		}
 
 	}
 
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
+	return FAppStyle::GetBrush("Level.UnlockedIcon16x");
+#else // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1
 	return FEditorStyle::GetBrush("Level.UnlockedIcon16x");
+#endif // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
 	
 }

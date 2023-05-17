@@ -174,12 +174,20 @@ void FCurviestCurveAssetEditor::RegisterTabSpawners(const TSharedRef<class FTabM
 	InTabManager->RegisterTabSpawner(CurveTabId, FOnSpawnTab::CreateSP(this, &FCurviestCurveAssetEditor::SpawnTab_CurveAsset))
 		.SetDisplayName(LOCTEXT("CurveTab", "Curve"))
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
+		.SetIcon(FSlateIcon(FAppStyle::GetAppStyleSetName(), "ClassIcon.CurveBase"));
+#else // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
 		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "ClassIcon.CurveBase"));
+#endif // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
 
 	InTabManager->RegisterTabSpawner(CurveDetailsTabId, FOnSpawnTab::CreateSP(this, &FCurviestCurveAssetEditor::SpawnTab_CurveDetailsEditor))
 		.SetDisplayName(LOCTEXT("CurveDetailsEditorTab", "Curve Details Editor"))
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
+		.SetIcon(FSlateIcon(FAppStyle::GetAppStyleSetName(), "ClassIcon.CurveBase"));
+#else // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
 		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "ClassIcon.CurveBase"));
+#endif // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
 
 }
 
@@ -360,7 +368,11 @@ TSharedRef<SDockTab> FCurviestCurveAssetEditor::SpawnTab_CurveAsset(const FSpawn
 		.TabColorScale(GetTabColorScale())
 		[
 			SNew(SBorder)
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
+			.BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
+#else // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1
 			.BorderImage(FEditorStyle::GetBrush("ToolPanel.GroupBorder"))
+#endif // #if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 1 
 		.Padding(0.0f)
 		[
 			CurveEditorPanel.ToSharedRef()
