@@ -136,6 +136,34 @@ bool UCurveCurviest::GetFloatValueFromTaggedParam(FGameplayTag IdentifierTag, fl
 }
 
 
+TArray<FGameplayTag> UCurveCurviest::GetAllCurveIdentifierTags( bool bAllowParamLookup ) const
+{
+	const_cast<UCurveCurviest*>(this)->RebuildLookupMaps();
+
+	TSet<FGameplayTag> OutTags;
+	CurveLookupByTag.GetKeys(OutTags);
+
+	if ( bAllowParamLookup )
+	{
+		TSet<FGameplayTag> OutParamTags;
+		ParamLookupByTag.GetKeys(OutParamTags);
+		OutTags = OutTags.Union(OutParamTags);
+	}
+
+	return OutTags.Array();
+}
+	
+TArray<FGameplayTag> UCurveCurviest::GetAllParamIdentifierTags() const
+{
+	const_cast<UCurveCurviest*>(this)->RebuildLookupMaps();
+
+	TSet<FGameplayTag> OutTags;
+	CurveLookupByTag.GetKeys(OutTags);
+
+	return OutTags.Array();
+}
+
+
 TArray<FRichCurveEditInfoConst> UCurveCurviest::GetCurves() const
 {
 	TArray<FRichCurveEditInfoConst> CurveEditInfos;

@@ -96,6 +96,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Math|Curves")
 	bool GetFloatValueFromTaggedParam(FGameplayTag IdentifierTag, float &ValueOut) const;
 
+	UFUNCTION(BlueprintCallable, Category = "Math|Curves")
+	TArray<FGameplayTag> GetAllCurveIdentifierTags(bool bAllowParamLookup = true) const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Math|Curves")
+	TArray<FGameplayTag> GetAllParamIdentifierTags() const;
+
 	// Begin FCurveOwnerInterface
 	virtual TArray<FRichCurveEditInfoConst> GetCurves() const override;
 	virtual TArray<FRichCurveEditInfo> GetCurves() override;
