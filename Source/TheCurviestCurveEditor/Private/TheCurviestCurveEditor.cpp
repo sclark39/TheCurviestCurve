@@ -2,7 +2,6 @@
 
 #include "TheCurviestCurveEditor.h"
 #include "AssetTypeActions_CurviestCurve.h"
-#include "PropertyEditor/Public/PropertyEditorModule.h"
 
 #define LOCTEXT_NAMESPACE "FTheCurviestCurveEditorModule"
 

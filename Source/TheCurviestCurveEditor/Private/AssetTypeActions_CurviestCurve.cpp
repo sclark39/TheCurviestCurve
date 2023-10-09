@@ -3,7 +3,6 @@
 #include "AssetTypeActions_CurviestCurve.h"
 
 #include "EditorFramework/AssetImportData.h"
-#include <CurveAssetEditor/Public/ICurveAssetEditor.h>
 
 #include "CurviestCurveAssetEditor.h"
 
